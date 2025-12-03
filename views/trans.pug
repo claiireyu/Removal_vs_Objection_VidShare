@@ -13,7 +13,14 @@ block scripts
     script.
         $(window).on("load", function(){
             $(".ui.big.labeled.icon.button.green.feed").on("click", function(){
-                  $(this).addClass('loading disabled');
-                window.location.href = '/';
+                $(this).addClass('loading disabled');
+                // Redirect to thank you page with Qualtrics link
+                $.get("/userProfile", function(data) {
+                    const r_id = data.mturkID || data.userProfile?.mturkID || 'unknown';
+                    window.location.href = "/thankyou?r_id=" + r_id;
+                }).fail(function() {
+                    // Fallback if userProfile fails
+                    window.location.href = "/thankyou?r_id=unknown";
+                });
             })
         });

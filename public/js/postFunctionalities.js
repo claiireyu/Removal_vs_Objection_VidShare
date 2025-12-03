@@ -119,6 +119,32 @@ function sharePost(e) {
     });
 }
 
+/**
+ * Check if interactions are allowed on a comment
+ * Returns false if interactions should be disabled, true otherwise
+ */
+function canInteractWithComment(commentElement) {
+    const commentClass = commentElement.attr("class");
+    
+    // Check if this is a removed comment - disable all interactions
+    if (commentClass && commentClass.includes('removal')) {
+        return false;
+    }
+    
+    // Check if this is a harassment comment (except offense3)
+    // For objection conditions, allow interactions (comment has allowInteractions attribute)
+    // For removal/control conditions, disable upvote/downvote
+    if (commentClass && commentClass.includes('offense') && !commentClass.includes('offense3')) {
+        const allowInteractions = commentElement.attr("data-allow-interactions") === "true";
+        if (!allowInteractions) {
+            return false; // Disable if not explicitly allowed
+        }
+    }
+    
+    // Objection comments and offense3 (third video harassment) should allow full interactions
+    return true;
+}
+
 function likeComment(e) {
     const target = $(e.target).closest('a.like'); //a.like
     const comment = target.closest(".comment");
@@ -130,6 +156,11 @@ function likeComment(e) {
     const commentID = comment.attr("commentID");
     const isUserComment = comment.children(".content").children("a.author").hasClass('/me');
     const like = Date.now();
+
+    // Check if interactions are allowed on this comment
+    if (!canInteractWithComment(comment)) {
+        return;
+    }
 
     if (target.hasClass("green")) { //Undo like comment
         target.removeClass("green");
@@ -179,6 +210,11 @@ function unlikeComment(e) {
     const isUserComment = comment.children(".content").children("a.author").hasClass('/me');
     const unlike = Date.now();
 
+    // Check if interactions are allowed on this comment
+    if (!canInteractWithComment(comment)) {
+        return;
+    }
+
     if (target.hasClass("red")) { //Undo unlike comment
         target.removeClass("red");
         icon.removeClass("red");
@@ -222,6 +258,12 @@ function flagComment(e) {
     const postClass = target.closest(".ui.fluid.card").attr("postClass");
     const commentID = comment.attr("commentID");
     const isUserComment = comment.children(".content").children("a.author").hasClass('/me');
+    const commentClass = comment.attr("class");
+
+    // Check if this is a removed comment - disable flagging
+    if (commentClass && commentClass.includes('removal')) {
+        return;
+    }
 
     const comment_imageElement = comment.children('.image');
     const comment_contentElement = comment.children('.content');
@@ -363,6 +405,11 @@ function changeColor(e, string = "") {
 }
 
 function openCommentReply(e) {
+    // Check if this is a disabled reply button (for removed comments)
+    if ($(e.target).hasClass('disabled')) {
+        return false; // Don't allow replies to removed comments
+    }
+    
     const photo = script.userProfile.picture;
     const color = script.userProfile.color;
     const target = $(e.target).parents('.content');

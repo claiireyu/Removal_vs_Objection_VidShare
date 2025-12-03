@@ -15,7 +15,16 @@ const color_error = '\x1b[31m%s\x1b[0m'; // red
 /**
  * Connect to MongoDB.
  */
-mongoose.connect(process.env.MONGOLAB_URI);
+const mongoUri = process.env.MONGOLAB_URI || process.env.MONGODB_URI;
+if (!mongoUri) {
+    console.log('\x1b[31m%s\x1b[0m', 'Error: MongoDB connection string not found!');
+    console.log('\x1b[36m%s\x1b[0m', 'Please create a .env file with either:');
+    console.log('  MONGOLAB_URI=your_connection_string');
+    console.log('  or');
+    console.log('  MONGODB_URI=your_connection_string');
+    process.exit(1);
+}
+mongoose.connect(mongoUri);
 db = mongoose.connection;
 db.on('error', (err) => {
     console.error(err);
@@ -92,7 +101,7 @@ async function getDataExport() {
 
         for (let i = 0; i < user.pageLog.length - 1; i++) {
             // For video pages only:
-            // Begins at v = 0, 1, 2, 3, 4, 5, 6, 7, 8
+            // Extract video number from URL (v=0,1,2,3,4,5,6,7,8)
             if (user.pageLog[i].page.startsWith("/?v=") || user.pageLog[i].page.startsWith("/tutorial?v=")) {
                 // Get the time spent on this page by taking the difference between the
                 // next recorded page visit.
@@ -101,9 +110,12 @@ async function getDataExport() {
                 if (timeDurationOnPage > 900) {
                     continue;
                 }
-                // Add the page time to the appropriate page's total time.
-                let page = parseInt((user.pageLog[i].page.replace(/\D/g, '') % 9) + 1);
-                record[`V${page}_timespent`] += timeDurationOnPage;
+                // Extract number from URL and map to video number: v=0->V1, v=1->V2, ..., v=8->V9
+                const vNum = parseInt(user.pageLog[i].page.replace(/\D/g, ''));
+                const page = vNum + 1;
+                if (page >= 1 && page <= 9) {
+                    record[`V${page}_timespent`] += timeDurationOnPage;
+                }
             }
         }
 

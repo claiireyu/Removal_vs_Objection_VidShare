@@ -79,7 +79,8 @@ app.use(passport.session());
 app.use(flash());
 app.use((req, res, next) => {
     res.locals.user = req.user;
-    // res.locals.cdn = process.env.CDN;
+    // Set cdn to empty string for local development, or use environment variable for production
+    res.locals.cdn = process.env.CDN || '';
     next();
 });
 
@@ -128,9 +129,8 @@ app.get('/', passportConfig.isAuthenticated, scriptController.getScript);
 app.post('/feed', passportConfig.isAuthenticated, scriptController.postUpdateFeedAction);
 app.get('/tutorial', passportConfig.isAuthenticated, scriptController.getScriptTutorial);
 app.get('/trans', passportConfig.isAuthenticated, function(req, res) {
-    res.render('trans', {
-        title: 'Instructions'
-    });
+    const redirectId = req.user?.mturkID || 'unknown';
+    return res.redirect(`/thankyou?r_id=${redirectId}`);
 });
 app.get('/thankyou', function(req, res) {
     res.render('thankyou', {
@@ -141,6 +141,7 @@ app.get('/thankyou', function(req, res) {
 
 app.get('/actors', actorsController.getActors);
 app.get('/userProfile', userController.getUserProfile);
+app.get('/qualtricsUrl', userController.getQualtricsUrl);
 
 /**
  * Error Handler.

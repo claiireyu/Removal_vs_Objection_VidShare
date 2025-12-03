@@ -12,8 +12,8 @@ block content
     div.right-button(data-html="Please wait to proceed to the next video.", data-position="top center", style="width: fit-content;")
       button.circular.ui.icon.button.blue.big.centered.disabled.right(nextVid=script[1].postID, style="margin: 0;")
         i.chevron.right.icon
-    div.lastVid-button.hidden(data-html="Please wait to continue.", data-position="top center", style="width: fit-content;bottom: 15px; position: absolute;")
-      .ui.large.button.green.fluid.disabled(style="margin:0px;") Continue
+    div.lastVid-button.hidden(data-html="Please wait to finish the study.", data-position="top center", style="width: fit-content;bottom: 15px; position: absolute;")
+      .ui.large.button.green.fluid.disabled(style="margin:0px;") Finish Study
     
 block styles 
   link(type='text/css', rel='stylesheet', href='/public/css/script.css')
@@ -24,7 +24,7 @@ block styles
 block scripts
   script.
     window.script={}
-    script.firstVideoIndex=!{script[0].postID}
+    script.firstVideoIndex=!{script && script[0] ? script[0].postID : 0}
   script(src='/public/js/script.js')
   script(src='/public/js/lib/jquery.highlight-within-textarea.js')
   script(src='/public/js/postFunctionalities.js')

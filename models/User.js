@@ -16,11 +16,12 @@ const userSchema = new mongoose.Schema({
 
     mturkID: { type: String, unique: true },
 
-    group: String, // [frequency of harassing comments]:[frequency of addressed harassment comments]
+    condition: String, // Experimental condition: Control, AI_Removal_NoRef, AI_Removal_Community, Human_Objection_NoRef, Human_Objection_Community
 
-    harassmentOrder: [Number], // Values correspond to which harassment comment. Order of list indicates the order in which they appear.
-    harassmentToObjectToOrder: [Number], // Values correspond to which harassment comment objection belongs to.
-    objectionOrder: [Number], // Values correspond to which objection comment. 
+    group: String, // [frequency of harassing comments]:[frequency of addressed harassment comments] - DEPRECATED
+    harassmentOrder: [Number], // Values correspond to which harassment comment. Order of list indicates the order in which they appear. - DEPRECATED
+    harassmentToObjectToOrder: [Number], // Values correspond to which harassment comment objection belongs to. - DEPRECATED
+    objectionOrder: [Number], // Values correspond to which objection comment. - DEPRECATED 
 
     commentTimes: [], // Lists of arrays of comment times for each video in the tutorial section.
     subcommentTimes: [], // List of subcomment times (6 values for objection comments, corresponding to their order of replacement; 1 value for first video, first comment's subcomment)

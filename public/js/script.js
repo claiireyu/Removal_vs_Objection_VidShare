@@ -101,7 +101,7 @@ $(window).on("load", function() {
             currentCard.find("video").trigger("pause");
         }
         // Record the time spent on current video "page".
-        resetActiveTimer(false, false); // Ensures everything in function completes before going to the next line.
+        resetActiveTimer(false, false); // Logs time spent on current video before transitioning
 
         // Transition to next video and play the video.
         const nextVid = parseInt($(this).attr("nextVid"));
@@ -121,7 +121,7 @@ $(window).on("load", function() {
         // Right Button & "Continue" button
         // If this is the last video
         if (index % numVideos == numVideos - 1) {
-            $(".right-button").attr("data-html", "This is the last video.</br>Click continue to proceed.");
+            $(".right-button").attr("data-html", "This is the last video.</br>Click 'Finish Study' to complete the study.");
             $("button.right").addClass('disabled');
             $(".lastVid-button").removeClass("hidden");
             $(".lastVid-button").popup();
@@ -175,10 +175,15 @@ $(window).on("load", function() {
         if (!currentCard.find("video")[0].paused) {
             currentCard.find("video").trigger("pause");
         }
-        if (window.location.pathname == "/tutorial") {
-            window.location.href = "/trans";
-        } else {
-            resetActiveTimer(true, false);
-        }
+        // For 3-video study, always go to thank you page with Qualtrics link
+        // Get r_id from user session via AJAX call
+        $.get("/userProfile", function(data) {
+            const r_id = data.mturkID || data.userProfile?.mturkID || 'unknown';
+            // Direct redirect to thank you page - bypass any other redirects
+            window.location.replace("/thankyou?r_id=" + r_id);
+        }).fail(function() {
+            // Fallback if userProfile fails
+            window.location.replace("/thankyou?r_id=unknown");
+        });
     })
 });

@@ -24,7 +24,7 @@ exports.getScriptTutorial = async(req, res, next) => {
 
         script_feed = await helpers.getTutorial(user);
 
-        res.render('script', { script: script_feed, title: 'Feed', disabledFunctionalities: true });
+        res.render('script', { script: script_feed, title: 'Feed', disabledFunctionalities: false });
     } catch (err) {
         next(err);
     }
@@ -52,7 +52,6 @@ exports.getScript = async(req, res, next) => {
 
         const finalfeed = await helpers.getFeed(user);
 
-        console.log("Script Size is: " + finalfeed.length);
         res.render('script', { script: finalfeed, title: 'Feed' });
     } catch (err) {
         next(err);
@@ -66,12 +65,50 @@ exports.getScript = async(req, res, next) => {
 exports.postUpdateFeedAction = async(req, res, next) => {
     try {
         const user = await User.findById(req.user.id).exec();
+        const mongoose = require('mongoose');
+        const Script = require('../models/Script.js');
+        let postObjectId;
+        
+        if (!req.body.postID) {
+            console.error('postUpdateFeedAction: postID is missing in request body');
+            return res.status(400).send({ result: "error", message: "postID is required" });
+        }
+        
+        // Try to convert to ObjectId
+        if (mongoose.Types.ObjectId.isValid(req.body.postID)) {
+            postObjectId = new mongoose.Types.ObjectId(req.body.postID);
+        } else {
+            // postID is likely a numeric ID (0, 1, 2, etc.) - need to look up the actual post ObjectId
+            const numericPostID = parseInt(req.body.postID);
+            if (isNaN(numericPostID)) {
+                console.error(`postUpdateFeedAction: Invalid postID format for user ${user.username}`);
+                console.error(`  postID value: "${req.body.postID}"`);
+                return res.status(400).send({ result: "error", message: "Invalid postID format" });
+            }
+            
+            // Look up the post by numeric postID and class/interest
+            const postClass = req.body.postClass || user.interest;
+            const post = await Script.findOne({ 
+                postID: numericPostID,
+                class: postClass 
+            }).select('_id').exec();
+            
+            if (!post) {
+                console.error(`postUpdateFeedAction: Post not found for postID=${numericPostID}, class=${postClass} for user ${user.username}`);
+                return res.status(404).send({ result: "error", message: "Post not found" });
+            }
+            
+            postObjectId = post._id;
+        }
+        
         // Find the object from the right post in feed
-        let feedIndex = _.findIndex(user.feedAction, function(o) { return o.post == req.body.postID; });
+        let feedIndex = _.findIndex(user.feedAction, function(o) { 
+            return o.post && o.post.toString() == postObjectId.toString(); 
+        });
 
         if (feedIndex == -1) {
             const cat = {
-                post: req.body.postID,
+                post: postObjectId,
                 postClass: req.body.postClass,
             };
             // Add new post into correct location
@@ -230,9 +267,6 @@ exports.postUpdateFeedAction = async(req, res, next) => {
             } // Video duration (array of time durations user viewed the video) 
             else if (req.body.videoDuration) {
                 user.feedAction[feedIndex].videoDuration.push(req.body.videoDuration);
-            } else {
-                console.log(req.body);
-                console.log('Something in feedAction went crazy. You should never see this.');
             }
         }
         await user.save();

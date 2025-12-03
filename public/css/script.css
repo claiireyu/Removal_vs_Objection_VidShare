@@ -268,3 +268,25 @@ a.unlike.red {
         max-width: none;
     }
 }
+
+/* Disabled actions for removed comments */
+.actions a.disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+.actions a.disabled:hover {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Light yellow background for deleted comments */
+.ui.comments .comment.deleted-comment > .content:not(.hidden),
+.comment.deleted-comment > .content:not(.hidden) {
+    background-color: #fffacd !important;
+    padding: 0.5em 0.75em !important;
+    border-radius: 4px !important;
+    display: block !important;
+    margin: 0.25em 0 !important;
+}

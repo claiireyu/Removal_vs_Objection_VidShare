@@ -33,7 +33,8 @@
         h4(style="text-align: right; color: gray;") Sort by: Newest First
         .ui.comments(style="display:none;")
           each comment in val.comments
-            .comment(commentID=comment.new_comment ? comment.commentID : comment.id, index=comment.commentID, commentClass=comment.class)
+            - var isDeleted = comment.actor && comment.actor.username === '[deleted]'
+            .comment(commentID=comment.new_comment ? comment.commentID : comment.id, index=comment.commentID, commentClass=comment.class, data-allow-interactions=comment.allowInteractions, class=isDeleted ? 'deleted-comment' : '', style=isDeleted ? "background-color: #fffacd !important; padding: 1em 1.25em !important; border-radius: 4px !important; margin: 0.25em 0 !important;" : "")
               .content(class=!comment.flagged ? "transition hidden" : "")
                 .metadata  
                   span.date !{user.createdAt.getTime() + comment.time}                             
@@ -47,7 +48,7 @@
               else
                 .image(style="background-color:"+comment.actor.profile.color+";", class=comment.flagged ? "transition hidden": "")
                   a.avatar
-                    img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)
+                    img(src='/profile_pictures/'+comment.actor.profile.picture)
               .content(class=comment.flagged ? "transition hidden": "")
                 if comment.new_comment 
                   a.author(class='/me') !{user.username} (me)
@@ -57,19 +58,82 @@
                   span.date !{user.createdAt.getTime() + comment.time}
                 .text !{comment.body}
                 .actions 
-                  a.like(class=comment.liked ? "green" : null)
-                    i.icon.thumbs.up(class=comment.liked ? "green" : null)
-                    span.num !{comment.likes} 
-                  a.unlike(class=comment.unliked ? "red" : null)
-                    i.icon.thumbs.down(class=comment.unliked ? "red" : null)
-                    span.num !{comment.unlikes}
-                  a.reply Reply
-                  if !comment.new_comment 
-                    a.flag Flag
+                  if comment.removed || (comment.class && comment.class.includes('removal'))
+                    // Comment removal condition: Disable upvote, downvote, and flagging for removed comments
+                    a.like.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                      i.icon.thumbs.up
+                      span.num !{comment.likes} 
+                    a.unlike.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                      i.icon.thumbs.down
+                      span.num !{comment.unlikes}
+                    a.reply.disabled(style="opacity: 0.5; cursor: not-allowed;") Reply
+                    if !comment.new_comment 
+                      a.flag.disabled(style="opacity: 0.5; cursor: not-allowed;") Flag
+                  else if comment.class && comment.class.includes('offense3')
+                    // Third video harassment: Full interactivity (upvote, downvote, flagging all enabled)
+                    a.like(class=comment.liked ? "green" : null)
+                      i.icon.thumbs.up(class=comment.liked ? "green" : null)
+                      span.num !{comment.likes} 
+                    a.unlike(class=comment.unliked ? "red" : null)
+                      i.icon.thumbs.down(class=comment.unliked ? "red" : null)
+                      span.num !{comment.unlikes}
+                    a.reply Reply
+                    if !comment.new_comment 
+                      a.flag Flag
+                  else if comment.class && comment.class.includes('offense') && !comment.class.includes('offense3')
+                    // Harassment comments (except third video): 
+                    // - If objection condition: Enable all interactions (likes, unlikes, flag, reply)
+                    // - If removal condition or control: Disable likes/unlikes, but allow flagging and reply
+                    - var allowInteractions = comment.allowInteractions === true || comment.allowInteractions === 'true'
+                    if allowInteractions
+                      // Objection conditions: Full interactivity
+                      a.like(class=comment.liked ? "green" : null)
+                        i.icon.thumbs.up(class=comment.liked ? "green" : null)
+                        span.num !{comment.likes} 
+                      a.unlike(class=comment.unliked ? "red" : null)
+                        i.icon.thumbs.down(class=comment.unliked ? "red" : null)
+                        span.num !{comment.unlikes}
+                      a.reply Reply
+                      if !comment.new_comment 
+                        a.flag Flag
+                    else
+                      // Removal/Control conditions: Disable likes/unlikes
+                      a.like.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                        i.icon.thumbs.up
+                        span.num !{comment.likes} 
+                      a.unlike.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                        i.icon.thumbs.down
+                        span.num !{comment.unlikes}
+                      a.reply Reply
+                      if !comment.new_comment 
+                        a.flag Flag
+                  else if comment.class && comment.class.includes('objection')
+                    // Objection comments: Full interactivity (upvote, downvote, flagging, reply all enabled)
+                    a.like(class=comment.liked ? "green" : null)
+                      i.icon.thumbs.up(class=comment.liked ? "green" : null)
+                      span.num !{comment.likes} 
+                    a.unlike(class=comment.unliked ? "red" : null)
+                      i.icon.thumbs.down(class=comment.unliked ? "red" : null)
+                      span.num !{comment.unlikes}
+                    a.reply Reply
+                    if !comment.new_comment 
+                      a.flag Flag
+                  else
+                    // Normal actions for neutral comments (random upvotes/downvotes)
+                    a.like(class=comment.liked ? "green" : null)
+                      i.icon.thumbs.up(class=comment.liked ? "green" : null)
+                      span.num !{comment.likes} 
+                    a.unlike(class=comment.unliked ? "red" : null)
+                      i.icon.thumbs.down(class=comment.unliked ? "red" : null)
+                      span.num !{comment.unlikes}
+                    a.reply Reply
+                    if !comment.new_comment 
+                      a.flag Flag
               if comment.subcomments.length!==0
                 .comments.subcomments
                   each subcomment in comment.subcomments
-                    .comment(commentID=subcomment.new_comment ? subcomment.commentID : subcomment.id, index=subcomment.commentID, commentClass=subcomment.class)
+                    - var isSubcommentDeleted = subcomment.actor && subcomment.actor.username === '[deleted]'
+                    .comment(commentID=subcomment.new_comment ? subcomment.commentID : subcomment.id, index=subcomment.commentID, commentClass=subcomment.class, class=isSubcommentDeleted ? 'deleted-comment' : '', style=isSubcommentDeleted ? "background-color: #fffacd !important; padding: 1em 1.25em !important; border-radius: 4px !important; margin: 0.25em 0 !important;" : "")
                       .content(class=!subcomment.flagged ? "transition hidden" : "")
                         .metadata
                           span.date !{user.createdAt.getTime() + subcomment.time}
@@ -83,7 +147,7 @@
                       else
                         .image(style="background-color:"+subcomment.actor.profile.color+";", class=subcomment.flagged ? "transition hidden": "")
                           a.avatar
-                            img(src=cdn+'/profile_pictures/'+subcomment.actor.profile.picture)
+                            img(src='/profile_pictures/'+subcomment.actor.profile.picture)
                       .content(class=subcomment.flagged ? "transition hidden": "")
                           if subcomment.new_comment 
                             a.author(class='/me') !{user.username} (me)
@@ -93,12 +157,36 @@
                             span.date !{user.createdAt.getTime() + subcomment.time}
                           .text !{subcomment.body}
                           .actions 
-                            a.like(class=subcomment.liked ? "green" : null)
-                              i.icon.thumbs.up(class=subcomment.liked ? "green" : null)
-                              span.num !{subcomment.likes} 
-                            a.unlike(class=subcomment.unliked ? "red" : null)
-                              i.icon.thumbs.down(class=subcomment.unliked ? "red" : null)
-                              span.num !{subcomment.unlikes}
-                            a.reply Reply
-                            if !subcomment.new_comment 
-                              a.flag Flag
+                            if subcomment.class && subcomment.class.includes('offense') && !subcomment.class.includes('offense3')
+                              // Harassment subcomments: Disabled upvote/downvote, but allow flagging and reply
+                              a.like.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                                i.icon.thumbs.up
+                                span.num !{subcomment.likes} 
+                              a.unlike.disabled(style="opacity: 0.5; cursor: not-allowed;")
+                                i.icon.thumbs.down
+                                span.num !{subcomment.unlikes}
+                              a.reply Reply
+                              if !subcomment.new_comment 
+                                a.flag Flag
+                            else if subcomment.class && subcomment.class.includes('objection')
+                              // Objection subcomments: Full interactivity
+                              a.like(class=subcomment.liked ? "green" : null)
+                                i.icon.thumbs.up(class=subcomment.liked ? "green" : null)
+                                span.num !{subcomment.likes} 
+                              a.unlike(class=subcomment.unliked ? "red" : null)
+                                i.icon.thumbs.down(class=subcomment.unliked ? "red" : null)
+                                span.num !{subcomment.unlikes}
+                              a.reply Reply
+                              if !subcomment.new_comment 
+                                a.flag Flag
+                            else
+                              // Normal actions for neutral subcomments
+                              a.like(class=subcomment.liked ? "green" : null)
+                                i.icon.thumbs.up(class=subcomment.liked ? "green" : null)
+                                span.num !{subcomment.likes} 
+                              a.unlike(class=subcomment.unliked ? "red" : null)
+                                i.icon.thumbs.down(class=subcomment.unliked ? "red" : null)
+                                span.num !{subcomment.unlikes}
+                              a.reply Reply
+                              if !subcomment.new_comment 
+                                a.flag Flag

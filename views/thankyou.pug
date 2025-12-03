@@ -9,7 +9,11 @@ block content
     h2(style="text-align:center;") Please now 
       span(style="text-decoration: underline") return to the Qualtrics Survey
     h2 
-      a(href=process.env.POST_SURVEY+r_id) !{process.env.POST_SURVEY+r_id}
+      - var postSurveyUrl = process.env.POST_SURVEY || 'https://qualtrics.com/survey'
+      - var rId = r_id || 'unknown'
+      - var separator = postSurveyUrl.includes('?') ? '&' : '?'
+      - var qualtricsUrl = postSurveyUrl + separator + 'r_id=' + rId
+      a(href=qualtricsUrl) #{qualtricsUrl}
     h2 to answer some questions.
       
 block styles 

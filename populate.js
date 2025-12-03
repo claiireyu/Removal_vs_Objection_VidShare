@@ -179,31 +179,47 @@ async function doPopulate() {
             Does this in series to insure comments are put in the correct order
             Takes a while to run because of this.
             *************************/
-        }).then(function(result) {
+        }).then(async function(result) {
             console.log(color_start, "Starting to populate post replies...");
-            return new Promise((resolve, reject) => {
-                async.eachSeries(comment_list, async function(new_reply, callback) {
+            // Process comments sequentially using for loop (better for async/await)
+            for (let i = 0; i < comment_list.length; i++) {
+                const new_reply = comment_list[i];
+                try {
                         const act = await Actor.findOne({ username: new_reply.actor }).exec();
                         if (act) {
-                            const pr = await Script.findOne({ postID: new_reply.reply }).exec();
+                            // Ensure postID is parsed correctly
+                            const postId = parseInt(new_reply.reply);
+                            const pr = await Script.findOne({ postID: postId }).exec();
                             if (pr) {
+                                // Ensure commentID is a number
+                                const commentId = parseInt(new_reply.id);
+                                // Use class-2 if class is empty (for offense3 comments)
+                                const commentClass = new_reply.class || new_reply['class-2'] || null;
                                 let comment_detail = {
-                                    commentID: new_reply.id,
+                                    commentID: commentId,
                                     body: new_reply.body,
                                     likes: new_reply.likes || getLikesComment(),
                                     unlikes: new_reply.dislikes || getUnlikesComment(),
                                     actor: act,
                                     time: new_reply.time ? timeStringToNum(new_reply.time) : null,
-                                    class: new_reply.class,
+                                    class: commentClass,
 
                                     subcomments: []
                                 };
 
                                 // Is a second-level reply?
-                                if (new_reply.replyTo) {
-                                    const comment = pr.comments.find((comment) => comment.commentID == new_reply.replyTo);
-                                    comment.subcomments.push(comment_detail);
-                                    comment.subcomments.sort(function(a, b) { return b.time - a.time; });
+                                // Check if replyTo exists and is not an empty string
+                                if (new_reply.replyTo && new_reply.replyTo !== '' && new_reply.replyTo !== 'undefined') {
+                                    const replyToId = parseInt(new_reply.replyTo);
+                                    const comment = pr.comments.find((comment) => {
+                                        return comment.commentID == replyToId || comment.commentID === replyToId || String(comment.commentID) === String(replyToId);
+                                    });
+                                    if (comment) {
+                                        comment.subcomments.push(comment_detail);
+                                        comment.subcomments.sort(function(a, b) { return b.time - a.time; });
+                                    } else {
+                                        continue; // Skip this comment and continue to next
+                                    }
                                 } // Is a parent reply?
                                 else {
                                     pr.comments.push(comment_detail);
@@ -214,31 +230,21 @@ async function doPopulate() {
                                     await pr.save();
                                 } catch (err) {
                                     console.log(color_error, "ERROR: Something went wrong with saving reply in database");
-                                    console.log(err);
-                                    callback(err);
+                                    console.log(color_error, err);
+                                    // Continue processing other comments even if one fails
                                 }
-                            } else { //Else no post found
-                                console.log(color_error, "ERROR: Post not found in database");
-                                callback();
                             }
-                        } else { //Else no actor found
-                            console.log(color_error, "ERROR: Actor not found in database");
-                            console.log(act)
                         }
-                    },
-                    function(err) {
-                        if (err) {
-                            console.log(color_error, "ERROR: Something went wrong with saving replies in database");
-                        }
-                        // Return response
-                        console.log(color_success, "All replies added to database!");
-                        mongoose.connection.close();
-                        resolve('Promise is resolved successfully.');
-                        return 'Loaded Replies';
-                    }
-                );
-
-            });
+                } catch (err) {
+                    console.log(color_error, `Unexpected error processing reply ID ${new_reply.id}: ${err.message}`);
+                    console.log(color_error, err);
+                    // Continue processing other comments
+                }
+            }
+            
+            console.log(color_success, "All replies added to database!");
+            mongoose.connection.close();
+            return 'Loaded Replies';
         })
 }
 

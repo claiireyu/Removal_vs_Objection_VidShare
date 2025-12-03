@@ -5,7 +5,7 @@
         img.ui.image(src=cdn+'/logo.svg', id='logo', width='150px')
       if user
         .right.menu
-          .ui.simple.dropdown.item
+          .item
             .image
               img.ui.image.rounded(src=user.profile.picture)
             span(style="margin-right: 5px;")= user.username
@@ -14,9 +14,7 @@
     a.item
       img.ui.image(src=cdn+'/logo.svg', id='cell_logo', width='150px')
     if user
-      a.item
-        .right.menu
-          .ui.simple.dropdown.item
-            .image
-              img.ui.image.rounded(src=user.profile.picture)
-            span(style="margin-right: 5px;")= user.username
+      .item
+        .image
+          img.ui.image.rounded(src=user.profile.picture)
+        span(style="margin-right: 5px;")= user.username

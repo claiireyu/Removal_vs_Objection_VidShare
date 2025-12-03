@@ -13,7 +13,16 @@ const color_success = '\x1b[32m%s\x1b[0m'; // green
 const color_error = '\x1b[31m%s\x1b[0m'; // red
 
 // establish initial Mongoose connection, if Research Site
-mongoose.connect(process.env.MONGOLAB_URI, { useNewUrlParser: true });
+const mongoUri = process.env.MONGOLAB_URI || process.env.MONGODB_URI;
+if (!mongoUri) {
+    console.log('\x1b[31m%s\x1b[0m', 'Error: MongoDB connection string not found!');
+    console.log('\x1b[36m%s\x1b[0m', 'Please create a .env file with either:');
+    console.log('  MONGOLAB_URI=your_connection_string');
+    console.log('  or');
+    console.log('  MONGODB_URI=your_connection_string');
+    process.exit(1);
+}
+mongoose.connect(mongoUri, { useNewUrlParser: true });
 // listen for errors after establishing initial connection
 db = mongoose.connection;
 db.on('error', (err) => {
@@ -71,10 +80,33 @@ async function getDataExport() {
 
         // For each video (feedAction)
         for (const feedAction of user.feedAction) {
-            if (!feedAction.post.class.startsWith(user.interest)) {
+            // Handle cases where post reference is missing - try to find it
+            let postObj = feedAction.post;
+            
+            // If post is not populated (it's just an ObjectId reference), populate it
+            if (!postObj || (typeof postObj === 'object' && !postObj.postID && !postObj.class)) {
+                const mongoose = require('mongoose');
+                const postId = postObj && postObj.toString ? postObj.toString() : postObj;
+                if (postId && mongoose.Types.ObjectId.isValid(postId)) {
+                    postObj = await Script.findById(postId).exec();
+                } else {
+                    // If still not found, try to find by class
+                    const matchingPosts = await Script.find({ 
+                        class: user.interest 
+                    }).sort('postID').exec();
+                    if (matchingPosts.length > 0) {
+                        postObj = matchingPosts[0]; // Use first post as fallback
+                    }
+                }
+            }
+            
+            // Ensure post object has the required properties
+            if (!postObj || !postObj.class || !postObj.class.startsWith(user.interest)) {
                 continue;
             }
-            const video = (feedAction.post.postID % 9) + 1; // 1, 2, 3, 4, 5, 6, 7, 8, 9
+            
+            // Map postID to video number: postID 0->V1, 1->V2, ..., 8->V9
+            const video = postObj.postID + 1;
             const section = video <= 6 ? "Tutorial" : "Behavioral";
 
             // If the video belongs to the behavioral section and not the tutorial section:

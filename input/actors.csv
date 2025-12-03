@@ -6,7 +6,7 @@ bbcearth,BBC Earth,,,,,Science,
 oneminimicro,Walt (oneminmicro) ,,,,,Science,
 unveiled,Unveiled,,,,,Science,
 5minutemagic,5-minute Magic,,,,,Science,
-NatGeo,National Geographic,,,,,Science,
+natgeo,National Geographic,,,,,Science,
 teded,Ted Education,,,,,Education,
 vox,Vox,,,,,Education,
 zackdfilms,Zack D. Films,,,,,Education,
@@ -18,39 +18,16 @@ kelliatkinson,Kelli Atkinson,,,,,Lifestyle,
 CourtAndNate1,Court and Nate,,,,,Lifestyle,
 effectivespaces,Effective Spaces,,,,,Lifestyle,
 momnutritionist,Mom Nutritionist,,,,,Lifestyle,
-jd920,,,,1_ant.svg,#8999a2,,0
-ap022,,,,12_fox.svg,#a6888a,,0
-dh223,,,,13_hawk.svg,#a69588,,0
-lk203,,,,14_jellyfish.svg,#93ae9f,,0
-wh092,,,,10_monkey.svg,#b7c9c8,offense,1
-qq753,,,,16_frog.svg,#99a289,,1
-dj293,,,,17_pig.svg,#a28999,,1
-yu239,,,,19_squirrel.svg,#f9cb9c,,2
-mx921,,,,20_whale.svg,#a6888a,,2
-id578,,,,3_butterfly.svg,#a69588,,2
-sb302,,,,22_elephant.svg,#93ae9f,offense,2
-eh552,,,,23_fish.svg,#b7c9c8,offense,2
-kf043,,,,24_spider.svg,#9bbcd6,,3
-de384,,,,25_squid.svg,#a28999,,3
-jk554,,,,18_sealion.svg,#98b197,offense,3
-hy507,,,,9_dog.svg,#93ae9f,offense,4
-di371,,,,11_bee.svg,#a69588,,4
-jj392,,,,15_lion.svg,#8999a2,,4
-se341,,,,14_jellyfish.svg,#a6888a,offense,4
-pd881,,,,2_bear.svg,#b4a7d6,,4
-hs702,,,,21_dolphin.svg,#ffe599,,5
-op231,,,,6_crab.svg,#a0c2e1,,5
-ll239,,,,26_rabbit.svg,#c18f92,,5
-nk403,,,,27_turtle.svg,#dcb190,objection,
-fm093,,,,28_kangaroo.svg,#eec86f,objection,
-jl417,,,,29_giraffe.svg,#888aa6,objection,
-xs301,,,,30_bat.svg,#9bbcd6,objection,
-dp112,,,,31_duck.svg,#eec86f,,6
-me312,,,,32_pigeon.svg,#8fc1be,,6
-cu201,,,,33_chick.svg,#a7a9ac,,6
-fy291,,,,34_frog.svg,#dcb190,,7
-sh900,,,,35_snake.svg,#98b197,,7
-ac432,,,,36_owl.svg,#888aa6,,7
-pw381,,,,37_caterpillar.svg,#9bbcd6,offense,8
-mb200,,,,38_seahorse.svg,#cf958e,,8
-wc854,,,,39_penguin.svg,#8fc1be,,8
+dp112,,,,31_duck.svg,#eec86f,,0
+me312,,,,32_pigeon.svg,#8fc1be,,0
+cu201,,,,33_chick.svg,#a7a9ac,,0
+[deleted],,,,30_bat.svg,#9bbcd6,removal,0
+jl417,,,,29_giraffe.svg,#888aa6,objection,0
+fy291,,,,34_frog.svg,#dcb190,,1
+sh900,,,,35_snake.svg,#98b197,,1
+ac432,,,,36_owl.svg,#888aa6,,1
+pw381,,,,37_caterpillar.svg,#9bbcd6,offense,2
+mb200,,,,38_seahorse.svg,#cf958e,,2
+wc854,,,,39_penguin.svg,#8fc1be,,2
+xs301,,,,30_bat.svg,#9bbcd6,offense0,0
+VidShare Bot,AI Bot,,,VidShare_Bot.svg,#888aa6,objection,0
