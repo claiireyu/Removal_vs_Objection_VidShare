@@ -17,12 +17,10 @@ public/css/main.css
 
 #user_uploads
 uploads/user_post
-
-outputFiles/
-
+/outputFiles/
+/input/
 data-export2.js
 data-export3.js
-mongodumps
 
 # API keys and secrets
 .env
@@ -40,7 +38,3 @@ bower_components
 # OS metadata
 .DS_Store
 Thumbs.db
-
-# Utility scripts (optional - uncomment if you want to ignore these)
-# cleanup-feedactions.js
-# clear-old-users.js
