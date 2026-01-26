@@ -438,7 +438,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:AI:NoRef':
             // AI removal message (no community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_NO_REF || "This comment is removed. Our bot 🤖 removed the comment for containing harassing language.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_NO_REF || "This comment is removed. Our bot🤖 removed the comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'ai_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -453,7 +453,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:AI:Ref':
             // AI removal message (with community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_REF || "This comment is removed. Our bot 🤖 removed the comment for containing harassing language, based on how people in the community respond.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_REF || "This comment is removed. Our bot🤖 removed this comment for containing harassing language inconsistent with typical community behavior.";
             firstVideo.comments[harassmentCommentIndex].class = 'ai_removal_community';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -468,7 +468,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:Com:NoRef':
             // Community member removal message (no community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_NO_REF || "This comment is removed. Our community member 🙋 removed the comment for containing harassing language.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_NO_REF || "This comment is removed. Our community member🙋 removed the comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -483,7 +483,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:Com:Ref':
             // Community member removal message (with community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_REF || "This comment is removed. Our community member 🙋 removed the comment for containing harassing language, based on the community's response.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_REF || "This comment is removed. Our community member🧑 removed this comment for containing harassing language inconsistent with typical community behavior.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_community';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
