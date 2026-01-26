@@ -52,6 +52,8 @@
               .content(class=comment.flagged ? "transition hidden": "")
                 if comment.new_comment 
                   a.author(class='/me') !{user.username} (me)
+                else if isDeleted
+                  a.author(style="font-weight: bold; color: #2185d0;") !{comment.actor.username}
                 else 
                   a.author !{comment.actor.username}
                 .metadata
@@ -151,6 +153,8 @@
                       .content(class=subcomment.flagged ? "transition hidden": "")
                           if subcomment.new_comment 
                             a.author(class='/me') !{user.username} (me)
+                          else if isSubcommentDeleted
+                            a.author(style="font-weight: bold; color: #2185d0;") !{subcomment.actor.username}
                           else 
                             a.author !{subcomment.actor.username}
                           .metadata
