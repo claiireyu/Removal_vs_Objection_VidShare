@@ -34,7 +34,7 @@
         .ui.comments(style="display:none;")
           each comment in val.comments
             - var isDeleted = comment.actor && comment.actor.username === '[deleted]'
-            .comment(commentID=comment.new_comment ? comment.commentID : comment.id, index=comment.commentID, commentClass=comment.class, data-allow-interactions=comment.allowInteractions, class=isDeleted ? 'deleted-comment' : '', style=isDeleted ? "background-color: #fffacd !important; padding: 1em 1.25em !important; border-radius: 4px !important; margin: 0.25em 0 !important;" : "")
+            .comment(commentID=comment.new_comment ? comment.commentID : comment.id, index=comment.commentID, commentClass=comment.class, data-allow-interactions=comment.allowInteractions, class=isDeleted ? 'deleted-comment' : '', style=isDeleted ? "background-color: #fffacd; border-radius: 4px; margin: 0.5em 0; padding: 0.75em;" : "")
               .content(class=!comment.flagged ? "transition hidden" : "")
                 .metadata  
                   span.date !{user.createdAt.getTime() + comment.time}                             
@@ -49,7 +49,7 @@
                 .image(style="background-color:"+comment.actor.profile.color+";", class=comment.flagged ? "transition hidden": "")
                   a.avatar
                     img(src='/profile_pictures/'+comment.actor.profile.picture)
-              .content(class=comment.flagged ? "transition hidden": "")
+              .content(class=comment.flagged ? "transition hidden": "", style=isDeleted ? "overflow: hidden;" : "")
                 if comment.new_comment 
                   a.author(class='/me') !{user.username} (me)
                 else if isDeleted
@@ -135,7 +135,7 @@
                 .comments.subcomments
                   each subcomment in comment.subcomments
                     - var isSubcommentDeleted = subcomment.actor && subcomment.actor.username === '[deleted]'
-                    .comment(commentID=subcomment.new_comment ? subcomment.commentID : subcomment.id, index=subcomment.commentID, commentClass=subcomment.class, class=isSubcommentDeleted ? 'deleted-comment' : '', style=isSubcommentDeleted ? "background-color: #fffacd !important; padding: 1em 1.25em !important; border-radius: 4px !important; margin: 0.25em 0 !important;" : "")
+                    .comment(commentID=subcomment.new_comment ? subcomment.commentID : subcomment.id, index=subcomment.commentID, commentClass=subcomment.class, class=isSubcommentDeleted ? 'deleted-comment' : '', style=isSubcommentDeleted ? "background-color: #fffacd; border-radius: 4px; margin: 0.5em 0; padding: 0.75em;" : "")
                       .content(class=!subcomment.flagged ? "transition hidden" : "")
                         .metadata
                           span.date !{user.createdAt.getTime() + subcomment.time}
@@ -150,7 +150,7 @@
                         .image(style="background-color:"+subcomment.actor.profile.color+";", class=subcomment.flagged ? "transition hidden": "")
                           a.avatar
                             img(src='/profile_pictures/'+subcomment.actor.profile.picture)
-                      .content(class=subcomment.flagged ? "transition hidden": "")
+                      .content(class=subcomment.flagged ? "transition hidden": "", style=isSubcommentDeleted ? "overflow: hidden;" : "")
                           if subcomment.new_comment 
                             a.author(class='/me') !{user.username} (me)
                           else if isSubcommentDeleted

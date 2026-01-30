@@ -3,11 +3,6 @@ extends ../ui_layout
 block content
     .thirteen.wide.column.centered
         h2(style="text-align: center;") Choose an interest
-        if user
-            .ui.info.message
-                i.info.icon
-                .header Current User: #{user.username}
-                .content Experimental Condition: #{user.condition || 'Not set'}
         .ui.warning.message.hidden
             i.close.icon 
             .header Choose an interest to proceed!

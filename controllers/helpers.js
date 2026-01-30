@@ -505,7 +505,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_AI_NO_REF || "This comment should not be allowed.",
+                    body: process.env.OBJECTION_AI_NO_REF || "This comment is offensive toward others. Please remember to stay respectful to each other here.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -529,7 +529,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_AI_REF || "This comment should not be allowed.This is not how we respond in our community.",
+                    body: process.env.OBJECTION_AI_REF || "This comment is offensive toward others. This is not how people typically respond in this community.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -554,7 +554,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_COM_NO_REF || "This comment should not be allowed.",
+                    body: process.env.OBJECTION_COM_NO_REF || "Please remember to stay respectful to each other here.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -579,7 +579,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_COM_REF || "This comment should not be allowed.This is not how we respond in our community.",
+                    body: process.env.OBJECTION_COM_REF || "This comment is offensive toward others. This is not how people typically respond in this community.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
