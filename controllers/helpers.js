@@ -438,7 +438,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:AI:NoRef':
             // AI removal message (no community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_NO_REF || "This comment is removed. Our bot🤖 removed the comment for containing harassing language.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_NO_REF || "This comment is removed. Our bot🤖 removed this comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'ai_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -468,7 +468,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:Com:NoRef':
             // Community member removal message (no community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_NO_REF || "This comment is removed. Our community member🙋 removed the comment for containing harassing language.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_NO_REF || "This comment is removed. Our community member🙋 removed this comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -483,7 +483,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             
         case 'Rem:Com:Ref':
             // Community member removal message (with community reference)
-            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_REF || "This comment is removed. Our community member🧑 removed this comment for containing harassing language inconsistent with typical community behavior.";
+            firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_REF || "This comment is removed. Our community member🙋 removed this comment for containing harassing language inconsistent with typical community behavior.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_community';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
@@ -505,7 +505,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_AI_NO_REF || "This comment is offensive toward others. Please remember to stay respectful to each other here.",
+                    body: process.env.OBJECTION_AI_NO_REF || "It’s important that we treat each other’s efforts with respect and kindness. You owe an apology.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -529,7 +529,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_AI_REF || "This comment is offensive toward others. This is not how people typically respond in this community.",
+                    body: process.env.OBJECTION_AI_REF || "It’s important that we treat each other’s efforts with respect and kindness. You owe an apology. This is not how people typically respond in this community.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -554,7 +554,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_COM_NO_REF || "Please remember to stay respectful to each other here.",
+                    body: process.env.OBJECTION_COM_NO_REF || "It’s important that we treat each other’s efforts with respect and kindness. You owe an apology.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,
@@ -579,7 +579,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 const subcomment = {
                     id: objectionId, // Add id field so template can use it for commentID attribute
                     commentID: 96,
-                    body: process.env.OBJECTION_COM_REF || "This comment is offensive toward others. This is not how people typically respond in this community.",
+                    body: process.env.OBJECTION_COM_REF || "It’s important that we treat each other’s efforts with respect and kindness. You owe an apology. This is not how people typically respond in this community.",
                     likes: 0,
                     unlikes: 0,
                     actor: actorForSubcomment,

@@ -58,7 +58,7 @@
                   a.author !{comment.actor.username}
                 .metadata
                   span.date !{user.createdAt.getTime() + comment.time}
-                .text !{comment.body}
+                .text(style=isDeleted ? "color: #2185d0; font-weight: bold;" : "") !{comment.body}
                 .actions 
                   if comment.removed || (comment.class && comment.class.includes('removal'))
                     // Comment removal condition: Disable upvote, downvote, and flagging for removed comments
@@ -159,7 +159,7 @@
                             a.author !{subcomment.actor.username}
                           .metadata
                             span.date !{user.createdAt.getTime() + subcomment.time}
-                          .text !{subcomment.body}
+                          .text(style=isSubcommentDeleted ? "color: #2185d0; font-weight: bold;" : "") !{subcomment.body}
                           .actions 
                             if subcomment.class && subcomment.class.includes('offense') && !subcomment.class.includes('offense3')
                               // Harassment subcomments: Disabled upvote/downvote, but allow flagging and reply
