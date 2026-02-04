@@ -29,7 +29,7 @@ function makeid(length) {
 }
 
 /**
- * GET /logout
+ * POST /logout
  * Handles user log out.
  */
 exports.logout = async(req, res) => {
@@ -41,7 +41,7 @@ exports.logout = async(req, res) => {
         req.session.destroy((err) => {
             if (err) console.log('Error : Failed to destroy the session during logout.', err);
             req.user = null;
-            res.redirect(`/thankyou?r_id=${r_id}`);
+            res.send({ r_id }); 
         });
     });
 };
@@ -208,7 +208,7 @@ exports.getForgot = (req, res) => {
 
 
 /**
- * GET /userInfo
+ * GET /userProfile
  * Get user profile and number of user comments
  */
 exports.getUserProfile = async(req, res, next) => {
@@ -217,33 +217,28 @@ exports.getUserProfile = async(req, res, next) => {
         res.set('Content-Type', 'application/json; charset=UTF-8');
         res.send({
             userProfile: user.profile,
-            numComments: user.numComments,
-            mturkID: user.mturkID
+            numComments: user.numComments
         });
     } catch (err) {
         next(err);
     }
 }
 
-/**
- * GET /qualtricsUrl
- * Get Qualtrics survey URL with r_id parameter
- */
-exports.getQualtricsUrl = async(req, res) => {
-    try {
-        const r_id = req.query.r_id || 'unknown';
-        const postSurveyUrl = process.env.POST_SURVEY || 'https://qualtrics.com/survey';
-        
-        // Properly format URL with query parameter separator
-        // Check if URL already has query parameters
-        const separator = postSurveyUrl.includes('?') ? '&' : '?';
-        const qualtricsUrl = postSurveyUrl + separator + 'r_id=' + r_id;
-        
-        res.set('Content-Type', 'application/json; charset=UTF-8');
-        res.send({
-            url: qualtricsUrl
-        });
-    } catch (err) {
-        res.status(500).send({ error: 'Failed to generate Qualtrics URL' });
+exports.getThankYou = async(req, res, next) => {
+    try { 
+        const user = await User.findById(req.user.id).exec();
+
+        const r_id = user.mturkID || "unknown";
+        const condition = user.condition || "unknown";
+        const interest = user.interest || "unknown";
+
+        const baseUrl = process.env.POST_SURVEY || "https://qualtrics.com/survey";
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        const qualtricsUrl =  `${baseUrl}${separator}r_id=${encodeURIComponent(r_id)}&condition=${encodeURIComponent(condition)}&interest=${encodeURIComponent(interest)}`;
+
+        res.render("thankyou", { qualtricsUrl: qualtricsUrl });
+
+    } catch (err){
+        next (err);
     }
-}
+};

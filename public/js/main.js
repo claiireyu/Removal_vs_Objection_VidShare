@@ -4,11 +4,11 @@ let activeStartTime;
 
 // Called when user is inactive for about 1 minute, when user logs out of the website, when user changes the page (page and video)
 // Adds the amount of time use was active on the website for
-function resetActiveTimer(loggingOut, fromIdle) {
+function resetActiveTimer(loggingOut, fromIdle, redirectUrl) {
     if (isActive) {
         const currentTime = new Date();
         const activeDuration = currentTime - activeStartTime - (fromIdle ? 60000 : 0);
-        if (window.location.pathname !== '/signup' && window.location.pathname !== '/thankyou') {
+        if (window.location.pathname !== '/signup') {
             let pathname = window.location.pathname;
             if (window.location.pathname == '/' || window.location.pathname == '/tutorial') {
                 const currentCard = $('.ui.fluid.card:visible');
@@ -22,7 +22,10 @@ function resetActiveTimer(loggingOut, fromIdle) {
             }).then(function() {
                 if (loggingOut) {
                     window.loggingOut = true;
-                    window.location.href = '/logout';
+                    $.post("/logout")
+                        .then(function(data) {
+                            window.location.href = redirectUrl; // go to Qualtrics
+                        })
                 }
             });
         }
@@ -52,8 +55,10 @@ $(window).on("load", function() {
         }
     }, 15000);
 
-    $('a.item.logoutLink').on('click', function() {
-        resetActiveTimer(true, false);
+    $('.logoutLink').on('click', function(e) {
+        $(this).addClass('loading disabled');
+        e.preventDefault(); // prevent immediate naviagation to href
+        resetActiveTimer(true, false, $(this).attr('href'));
     });
 
     if (window.location.pathname !== '/signup' && window.location.pathname !== '/' && window.location.pathname !== '/logout' && window.location.pathname !== '/thankyou') {

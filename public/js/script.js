@@ -175,15 +175,6 @@ $(window).on("load", function() {
         if (!currentCard.find("video")[0].paused) {
             currentCard.find("video").trigger("pause");
         }
-        // For 3-video study, always go to thank you page with Qualtrics link
-        // Get r_id from user session via AJAX call
-        $.get("/userProfile", function(data) {
-            const r_id = data.mturkID || data.userProfile?.mturkID || 'unknown';
-            // Direct redirect to thank you page - bypass any other redirects
-            window.location.replace("/thankyou?r_id=" + r_id);
-        }).fail(function() {
-            // Fallback if userProfile fails
-            window.location.replace("/thankyou?r_id=unknown");
-        });
+        window.location.replace("/thankyou");
     })
 });

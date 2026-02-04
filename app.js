@@ -123,7 +123,7 @@ app.get('/account/interest', passportConfig.isAuthenticated, async function(req,
     });
 });
 app.post('/account/interest', passportConfig.isAuthenticated, userController.postInterestInfo);
-app.get('/logout', userController.logout);
+app.post('/logout', passportConfig.isAuthenticated, userController.logout);
 
 app.get('/', passportConfig.isAuthenticated, scriptController.getScript);
 app.post('/feed', passportConfig.isAuthenticated, scriptController.postUpdateFeedAction);
@@ -132,16 +132,10 @@ app.get('/trans', passportConfig.isAuthenticated, function(req, res) {
     const redirectId = req.user?.mturkID || 'unknown';
     return res.redirect(`/thankyou?r_id=${redirectId}`);
 });
-app.get('/thankyou', function(req, res) {
-    res.render('thankyou', {
-        title: 'Thank you!',
-        r_id: req.query.r_id
-    })
-});
+app.get('/thankyou', passportConfig.isAuthenticated, userController.getThankYou);
 
 app.get('/actors', actorsController.getActors);
 app.get('/userProfile', userController.getUserProfile);
-app.get('/qualtricsUrl', userController.getQualtricsUrl);
 
 /**
  * Error Handler.

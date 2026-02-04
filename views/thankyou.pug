@@ -1,20 +1,13 @@
 extends ./ui_layout
 
 block content
-  .thirteen.wide.column.centered
+  .thirteen.wide.column.center.aligned
     h2(style="text-align:center; font-weight: normal;") Thank you for engaging on
       img(src=cdn+'/favicon.svg', height="50px", style="margin-bottom:-10px")
       span.title VidShare
       | !
-    h2(style="text-align:center;") Please now 
-      span(style="text-decoration: underline") return to the Qualtrics Survey
-    h2 
-      - var postSurveyUrl = process.env.POST_SURVEY || 'https://qualtrics.com/survey'
-      - var rId = r_id || 'unknown'
-      - var separator = postSurveyUrl.includes('?') ? '&' : '?'
-      - var qualtricsUrl = postSurveyUrl + separator + 'r_id=' + rId
-      a(href=qualtricsUrl) #{qualtricsUrl}
-    h2 to answer some questions.
+    h2(style="text-align:center; text-decoration: underline;") Please now return to the Qualtrics Survey to answer some questions.
+    button.ui.primary.button.blue.big.logoutLink(href=qualtricsUrl, style="margin: 20px;") Go to Qualtrics Survey
       
 block styles 
     link(type='text/css', rel='stylesheet', href='/public/css/signup.css')
