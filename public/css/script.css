@@ -16,7 +16,8 @@ button.circular.ui.icon.button.blue.centered.hidden {
     height: calc(100vh - 100px);
     margin: 0 !important;
     /* Prevent overflow outside the card */
-    overflow: hidden;
+    overflow: hidden;    
+    scrollbar-color: #555 #c7c7c7; 
 }
 
 .ui.fluid.card.hidden {
