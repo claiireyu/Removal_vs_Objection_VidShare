@@ -1,7 +1,7 @@
 .ui.fluid.card(class=index!=0?"hidden":null, postID=val.id, index=val.postID, postClass=val.class, postTimeStamps=postTimeStamps, postTimeStampsDict=postTimeStampsDict)
   .content.title
     h2 !{val.body}
-  .content
+  .content.body
     .ui.two.column.grid.stackable
       .five.wide.column.centered
         video(src=cdn+'/post_pictures/'+val.picture controls controlsList="nofullscreen" poster type='video/mp4')

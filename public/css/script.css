@@ -9,27 +9,54 @@ button.circular.ui.icon.button.blue.centered.hidden {
 }
 
 
-/* ---- VIDEO CSS ---- */
+/* ---- CARD CSS ----*/
 
 .ui.fluid.card {
-    min-height: fit-content;
+    /* Ensure it's height. Set card height to 100vh subtract height of site header. */
+    height: calc(100vh - 100px);
     margin: 0 !important;
-    /*For single post on page*/
+    /* Prevent overflow outside the card */
+    overflow: hidden;
 }
 
 .ui.fluid.card.hidden {
     display: none !important;
 }
 
-video {
-    width: 100%;
-    min-height: calc(100vh - 330px);
-    background-color: black;
+.ui.fluid.card .content.title {
+    flex-grow: unset;
+}
+
+.ui.fluid.card .content.body {
+    /* Ensure it's height. Set card body height to 100% card height subtract height of card header */
+    height: calc(100% - 60px);
+}
+
+.ui.fluid.card .content.body .ui.two.column.grid.stackable {
+    /* Ensure it's height. */
+    height: calc(100% + 2em);
 }
 
 .five.wide.column.centered {
     padding: 0 !important;
     border-right: #d4d4d5 solid 1px;
+    /* Ensure it's height. */
+    height: 100%;
+}
+
+.eleven.wide.column.centered {
+    display: flex;
+    flex-direction: column;
+    /* Ensure it's height. */
+    height: 100%;
+}
+
+/* ---- VIDEO CSS ---- */
+
+video {
+    width: 100%;
+    max-height: calc(100% - 120px);
+    background-color: black;
 }
 
 
@@ -262,10 +289,17 @@ a.unlike.red {
     }
 }
 
+
+/** when page width < 767px **/
+
 @media (max-width: 767px) {
     .ui.comments {
         height: auto !important;
         max-width: none;
+    }
+    .ui.fluid.card {
+        height: unset;
+        margin-top: 2em !important;
     }
 }
 
