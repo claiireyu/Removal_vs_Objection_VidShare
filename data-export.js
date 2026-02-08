@@ -15,7 +15,7 @@ const color_success = '\x1b[32m%s\x1b[0m'; // green
 const color_error = '\x1b[31m%s\x1b[0m'; // red
 
 // establish initial Mongoose connection, if Research Site
-mongoose.connect(process.env.MONGOLAB_URI, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 // listen for errors after establishing initial connection
 db = mongoose.connection;
 db.on('error', (err) => {

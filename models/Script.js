@@ -22,6 +22,7 @@ const scriptSchema = new mongoose.Schema({
         actor: { type: Schema.ObjectId, ref: 'Actor' }, //actor of comment
         time: Number, //time of comment in reference to video (in milliseconds)
         class: String, //For experimental use (used to define the type of comment, null, offense, control)
+        allowInteractions: { type: Boolean, default: false }, // For Control/objection: allow upvote, downvote, flag, reply on harassment comment
 
         subcomments: [new Schema({
             commentID: Number, // ID of the comment

@@ -32,17 +32,27 @@ function serializeActorForSubcomment(actor) {
 }
 
 /**
- * Helper: Set actor to [deleted] for removal conditions
+ * Helper: Set actor to [deleted] for removal conditions.
+ * Uses removerActor's profile picture and color so the removal shows bot vs community member avatar.
+ * - Bot removal (Rem:AI:*): pass aiBotActor so bot profile pic is used.
+ * - Community removal (Rem:Com:*): pass a community member actor so their profile pic is used.
  */
-function setDeletedActor(comment, originalActor) {
+function setDeletedActor(comment, originalActor, removerActor) {
+    let picture = '30_bat.svg';
+    let color = '#9bbcd6';
+    if (removerActor && removerActor.profile) {
+        const profile = removerActor.profile.toObject ? removerActor.profile.toObject() : removerActor.profile;
+        if (profile.picture) picture = profile.picture;
+        if (profile.color) color = profile.color;
+    }
     comment.actor = {
         username: '[deleted]',
         profile: {
             name: '',
             location: '',
             bio: '',
-            color: '#9bbcd6',
-            picture: '30_bat.svg'
+            color: color,
+            picture: picture
         },
         _id: originalActor._id || originalActor.id
     };
@@ -367,12 +377,13 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             foundComment.unlikes = 0;
             // Set time to -6:00 (6 hours before user creation) to ensure it appears before objection comments (3 hours ago)
             setHarassmentCommentTime(foundComment);
-            // Enable interactions for objection conditions, disable for removal conditions
+            // Enable interactions for objection conditions and Control; disable for removal conditions
             const isObjectionCondition = user.condition && (
                 user.condition.startsWith('Obj:AI:') || 
                 user.condition.startsWith('Obj:Com:')
             );
-            foundComment.allowInteractions = isObjectionCondition;
+            const isControlCondition = user.condition === 'Control';
+            foundComment.allowInteractions = isObjectionCondition || isControlCondition;
             // Mark the comment as modified so Mongoose includes allowInteractions in toObject()
             foundComment.markModified('allowInteractions');
         }
@@ -387,11 +398,12 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
             if (!firstVideo.comments) {
                 firstVideo.comments = [];
             }
-            // Enable interactions for objection conditions, disable for removal conditions
+            // Enable interactions for objection conditions and Control; disable for removal conditions
             const isObjectionCondition = user.condition && (
                 user.condition.startsWith('Obj:AI:') || 
                 user.condition.startsWith('Obj:Com:')
             );
+            const isControlCondition = user.condition === 'Control';
             const harassmentCommentObj = {
                 commentID: 999, // Use a high ID to avoid conflicts
                 body: harassmentComment,
@@ -400,7 +412,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 actor: harassmentActor,
                 time: -6 * 60 * 60 * 1000, // Will be set properly via setHarassmentCommentTime if needed
                 class: 'offense1',
-                allowInteractions: isObjectionCondition,
+                allowInteractions: isObjectionCondition || isControlCondition,
                 subcomments: []
             };
             firstVideo.comments.push(harassmentCommentObj);
@@ -416,7 +428,8 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
 
     switch (user.condition) {
         case 'Control': {
-            // Show the harassment comment exactly as written (no objection or removal)
+            // Show the harassment comment exactly as written (no objection or removal).
+            // Enable full interaction (upvotes, downvotes, comments, flag) for the harassment comment.
             const controlComment = firstVideo.comments[harassmentCommentIndex];
             if (controlComment) {
                 controlComment.body = harassmentComment;
@@ -425,7 +438,7 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
                 controlComment.likes = 0;
                 controlComment.unlikes = 0;
                 controlComment.subcomments = [];
-                controlComment.allowInteractions = true;
+                controlComment.allowInteractions = true; // Enable upvote, downvote, reply, flag for Control
                 setHarassmentCommentTime(controlComment);
                 if (typeof controlComment.markModified === 'function') {
                     controlComment.markModified('allowInteractions');
@@ -437,63 +450,57 @@ async function applyManipulationToFirstVideo(firstVideo, user) {
         }
             
         case 'Rem:AI:NoRef':
-            // AI removal message (no community reference)
+            // AI removal message (no community reference); show bot profile pic
             firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_NO_REF || "This comment is removed. Our bot🤖 removed this comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'ai_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
             firstVideo.comments[harassmentCommentIndex].unlikes = 0;
             firstVideo.comments[harassmentCommentIndex].subcomments = [];
-            // Ensure time is still -6:00
             setHarassmentCommentTime(firstVideo.comments[harassmentCommentIndex]);
-            // Set username to [deleted] by creating a new actor object
             const originalActor1 = firstVideo.comments[harassmentCommentIndex].actor;
-            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor1);
+            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor1, aiBotActor);
             break;
             
         case 'Rem:AI:Ref':
-            // AI removal message (with community reference)
+            // AI removal message (with community reference); show bot profile pic
             firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_AI_REF || "This comment is removed. Our bot🤖 removed this comment for containing harassing language inconsistent with typical community behavior.";
             firstVideo.comments[harassmentCommentIndex].class = 'ai_removal_community';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
             firstVideo.comments[harassmentCommentIndex].unlikes = 0;
             firstVideo.comments[harassmentCommentIndex].subcomments = [];
-            // Ensure time is still -6:00
             setHarassmentCommentTime(firstVideo.comments[harassmentCommentIndex]);
-            // Set username to [deleted] by creating a new actor object
             const originalActor2 = firstVideo.comments[harassmentCommentIndex].actor;
-            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor2);
+            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor2, aiBotActor);
             break;
             
         case 'Rem:Com:NoRef':
-            // Community member removal message (no community reference)
+            // Community member removal message (no community reference); show community member profile pic
             firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_NO_REF || "This comment is removed. Our community member🙋 removed this comment for containing harassing language.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_no_ref';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
             firstVideo.comments[harassmentCommentIndex].unlikes = 0;
             firstVideo.comments[harassmentCommentIndex].subcomments = [];
-            // Ensure time is still -6:00
             setHarassmentCommentTime(firstVideo.comments[harassmentCommentIndex]);
-            // Set username to [deleted] by creating a new actor object
             const originalActor3 = firstVideo.comments[harassmentCommentIndex].actor;
-            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor3);
+            const communityRemover1 = humanObjectionActors.length > 0 ? humanObjectionActors[0] : null;
+            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor3, communityRemover1);
             break;
             
         case 'Rem:Com:Ref':
-            // Community member removal message (with community reference)
+            // Community member removal message (with community reference); show community member profile pic
             firstVideo.comments[harassmentCommentIndex].body = process.env.REMOVAL_COM_REF || "This comment is removed. Our community member🙋 removed this comment for containing harassing language inconsistent with typical community behavior.";
             firstVideo.comments[harassmentCommentIndex].class = 'community_removal_community';
             firstVideo.comments[harassmentCommentIndex].removed = true;
             firstVideo.comments[harassmentCommentIndex].likes = 0;
             firstVideo.comments[harassmentCommentIndex].unlikes = 0;
             firstVideo.comments[harassmentCommentIndex].subcomments = [];
-            // Ensure time is still -6:00
             setHarassmentCommentTime(firstVideo.comments[harassmentCommentIndex]);
-            // Set username to [deleted] by creating a new actor object
             const originalActor4 = firstVideo.comments[harassmentCommentIndex].actor;
-            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor4);
+            const communityRemover2 = humanObjectionActors.length > 0 ? humanObjectionActors[0] : null;
+            setDeletedActor(firstVideo.comments[harassmentCommentIndex], originalActor4, communityRemover2);
             break;
             
         case 'Obj:AI:NoRef':
