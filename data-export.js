@@ -208,6 +208,9 @@ async function getDataExport() {
         { id: 'V1_PostComments', title: 'V1_PostComments' },
         { id: 'V2_PostComments', title: 'V2_PostComments' },
         { id: 'V3_PostComments', title: 'V3_PostComments' },
+        { id: 'V1_PostCommentBodies', title: 'V1_PostCommentBodies (comment bodies for V1, same format as objection reply bodies)' },
+        { id: 'V2_PostCommentBodies', title: 'V2_PostCommentBodies (comment bodies for V2)' },
+        { id: 'V3_PostCommentBodies', title: 'V3_PostCommentBodies (comment bodies for V3)' },
         { id: 'Off1_Appear', title: 'Off1_Appear (T/F) - Indicates if participant visited V1 (where offense1 appears)' },
         { id: 'Off1_Upvote', title: 'Off1_Upvote (T/F)' },
         { id: 'Off1_Downvote', title: 'Off1_Downvote (T/F)' },
@@ -257,6 +260,9 @@ async function getDataExport() {
             V1_PostComments: 0,
             V2_PostComments: 0,
             V3_PostComments: 0,
+            V1_PostCommentBodies: '',
+            V2_PostCommentBodies: '',
+            V3_PostCommentBodies: '',
             Off1_Appear: false,
             Off1_Upvote: false,
             Off1_Downvote: false,
@@ -517,6 +523,18 @@ async function getDataExport() {
             record[`V${video}_CommentDownvoteNumber`] += numDislikes;
             record[`V${video}_CommentFlagNumber`] += numFlagged;
             record[`V${video}_PostComments`] += numNewComments;
+
+            // Store actual comment bodies for this video (same format as Off1_ReplyBody / Obj1_ReplyBody)
+            if (newComments.length > 0) {
+                let bodiesString = '';
+                newComments.forEach(comment => {
+                    bodiesString += comment.new_comment_id + (comment.reply_to != null ? ' (is a reply to ' + comment.reply_to + ')' : '') + ': ' + (comment.body || '') + ' | ';
+                });
+                if (bodiesString.endsWith(' | ')) {
+                    bodiesString = bodiesString.slice(0, -3);
+                }
+                record[`V${video}_PostCommentBodies`] = bodiesString;
+            }
 
             // Track offense1 and objection interactions on V1 (first video)
             if (video == 1 && user.interest != "None-True") {
